@@ -9,17 +9,27 @@ function ManageQuestions() {
 
   const navigate = useNavigate();
 
+  const BACKEND_URL = "https://quizz-mkkz.onrender.com";
+
   // Get all questions
   const fetchQuestions = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/questions/"
+        `${BACKEND_URL}/questions/`
       );
 
       const data = await response.json();
 
+      if (!response.ok) {
+        setMessage(
+          data.detail || "Failed to load questions."
+        );
+        return;
+      }
+
       setQuestions(data);
     } catch (error) {
+      console.error("Fetch questions error:", error);
       setMessage("Unable to connect to backend.");
     }
   };
@@ -40,7 +50,7 @@ function ManageQuestions() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/questions/${id}`,
+        `${BACKEND_URL}/questions/${id}`,
         {
           method: "DELETE",
         }
@@ -49,12 +59,19 @@ function ManageQuestions() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Question deleted successfully.");
+        setMessage(
+          "Question deleted successfully."
+        );
+
         fetchQuestions();
       } else {
-        setMessage(data.detail || "Failed to delete question.");
+        setMessage(
+          data.detail ||
+            "Failed to delete question."
+        );
       }
     } catch (error) {
+      console.error("Delete question error:", error);
       setMessage("Unable to connect to backend.");
     }
   };
@@ -74,20 +91,35 @@ function ManageQuestions() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/questions/${editingQuestion.id}`,
+        `${BACKEND_URL}/questions/${editingQuestion.id}`,
         {
           method: "PUT",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
-            question: editingQuestion.question,
-            option1: editingQuestion.option1,
-            option2: editingQuestion.option2,
-            option3: editingQuestion.option3,
-            option4: editingQuestion.option4,
-            correct_answer: editingQuestion.correct_answer,
-            category: editingQuestion.category,
+            question:
+              editingQuestion.question,
+
+            option1:
+              editingQuestion.option1,
+
+            option2:
+              editingQuestion.option2,
+
+            option3:
+              editingQuestion.option3,
+
+            option4:
+              editingQuestion.option4,
+
+            correct_answer:
+              editingQuestion.correct_answer,
+
+            category:
+              editingQuestion.category,
           }),
         }
       );
@@ -95,15 +127,21 @@ function ManageQuestions() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Question updated successfully.");
+        setMessage(
+          "Question updated successfully."
+        );
 
         setEditingQuestion(null);
 
         fetchQuestions();
       } else {
-        setMessage(data.detail || "Failed to update question.");
+        setMessage(
+          data.detail ||
+            "Failed to update question."
+        );
       }
     } catch (error) {
+      console.error("Update question error:", error);
       setMessage("Unable to connect to backend.");
     }
   };
@@ -131,8 +169,10 @@ function ManageQuestions() {
               padding: "20px",
               marginBottom: "30px",
               borderRadius: "12px",
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
+              background:
+                "rgba(255,255,255,0.08)",
+              border:
+                "1px solid rgba(255,255,255,0.15)",
             }}
           >
 
@@ -142,11 +182,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.question}
+                value={
+                  editingQuestion.question
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    question: e.target.value,
+                    question:
+                      e.target.value,
                   })
                 }
               />
@@ -156,11 +199,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.option1}
+                value={
+                  editingQuestion.option1
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    option1: e.target.value,
+                    option1:
+                      e.target.value,
                   })
                 }
               />
@@ -170,11 +216,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.option2}
+                value={
+                  editingQuestion.option2
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    option2: e.target.value,
+                    option2:
+                      e.target.value,
                   })
                 }
               />
@@ -184,11 +233,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.option3}
+                value={
+                  editingQuestion.option3
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    option3: e.target.value,
+                    option3:
+                      e.target.value,
                   })
                 }
               />
@@ -198,11 +250,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.option4}
+                value={
+                  editingQuestion.option4
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    option4: e.target.value,
+                    option4:
+                      e.target.value,
                   })
                 }
               />
@@ -212,11 +267,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.correct_answer}
+                value={
+                  editingQuestion.correct_answer
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    correct_answer: e.target.value,
+                    correct_answer:
+                      e.target.value,
                   })
                 }
               />
@@ -226,11 +284,14 @@ function ManageQuestions() {
 
               <input
                 type="text"
-                value={editingQuestion.category || ""}
+                value={
+                  editingQuestion.category || ""
+                }
                 onChange={(e) =>
                   setEditingQuestion({
                     ...editingQuestion,
-                    category: e.target.value,
+                    category:
+                      e.target.value,
                   })
                 }
               />
@@ -244,8 +305,12 @@ function ManageQuestions() {
 
               <button
                 type="button"
-                style={{ marginLeft: "10px" }}
-                onClick={() => setEditingQuestion(null)}
+                style={{
+                  marginLeft: "10px",
+                }}
+                onClick={() =>
+                  setEditingQuestion(null)
+                }
               >
                 Cancel
               </button>
@@ -267,8 +332,10 @@ function ManageQuestions() {
                 marginTop: "20px",
                 padding: "20px",
                 borderRadius: "12px",
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                background:
+                  "rgba(255,255,255,0.08)",
+                border:
+                  "1px solid rgba(255,255,255,0.15)",
               }}
             >
 
@@ -276,30 +343,51 @@ function ManageQuestions() {
                 {index + 1}. {q.question}
               </h3>
 
-              <p>Option 1: {q.option1}</p>
-              <p>Option 2: {q.option2}</p>
-              <p>Option 3: {q.option3}</p>
-              <p>Option 4: {q.option4}</p>
+              <p>
+                Option 1: {q.option1}
+              </p>
 
               <p>
-                <strong>Correct Answer:</strong>{" "}
+                Option 2: {q.option2}
+              </p>
+
+              <p>
+                Option 3: {q.option3}
+              </p>
+
+              <p>
+                Option 4: {q.option4}
+              </p>
+
+              <p>
+                <strong>
+                  Correct Answer:
+                </strong>{" "}
                 {q.correct_answer}
               </p>
 
               <p>
-                <strong>Category:</strong>{" "}
+                <strong>
+                  Category:
+                </strong>{" "}
                 {q.category}
               </p>
 
               <button
-                onClick={() => handleEdit(q)}
+                onClick={() =>
+                  handleEdit(q)
+                }
               >
                 Edit
               </button>
 
               <button
-                style={{ marginLeft: "10px" }}
-                onClick={() => handleDelete(q.id)}
+                style={{
+                  marginLeft: "10px",
+                }}
+                onClick={() =>
+                  handleDelete(q.id)
+                }
               >
                 Delete
               </button>

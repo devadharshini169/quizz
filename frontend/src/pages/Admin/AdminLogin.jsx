@@ -18,7 +18,7 @@ function AdminLogin() {
 
     try {
       const response = await fetch(
-        "https://quizz-mkkz.onrender.com/auth/login/",
+        "https://quizz-mkkz.onrender.com/auth/login",
         {
           method: "POST",
           headers: {

@@ -31,7 +31,7 @@ function CreateQuestion() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/questions/",
+        "https://quizz-mkkz.onrender.com/questions/",
         {
           method: "POST",
           headers: {
@@ -62,9 +62,12 @@ function CreateQuestion() {
         setCorrectAnswer("");
         setCategory("");
       } else {
-        setMessage("Failed to create question.");
+        setMessage(
+          data.detail || "Failed to create question."
+        );
       }
     } catch (error) {
+      console.error("Create question error:", error);
       setMessage("Unable to connect to backend.");
     }
   };
@@ -137,11 +140,25 @@ function CreateQuestion() {
               fontSize: "16px",
             }}
           >
-            <option value="">Select Correct Answer</option>
-            <option value={option1}>Option 1</option>
-            <option value={option2}>Option 2</option>
-            <option value={option3}>Option 3</option>
-            <option value={option4}>Option 4</option>
+            <option value="">
+              Select Correct Answer
+            </option>
+
+            <option value={option1}>
+              Option 1
+            </option>
+
+            <option value={option2}>
+              Option 2
+            </option>
+
+            <option value={option3}>
+              Option 3
+            </option>
+
+            <option value={option4}>
+              Option 4
+            </option>
           </select>
 
           <br />
@@ -171,7 +188,11 @@ function CreateQuestion() {
 
         <br />
 
-        <button onClick={() => navigate("/admin/dashboard")}>
+        <button
+          onClick={() =>
+            navigate("/admin/dashboard")
+          }
+        >
           Back to Dashboard
         </button>
 
