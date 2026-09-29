@@ -49,10 +49,11 @@ app = FastAPI(
 )
 
 
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-
     allow_origins=[
+        # Local frontend
         "http://localhost:5173",
         "http://127.0.0.1:5173",
 
@@ -71,15 +72,16 @@ app.add_middleware(
         "http://localhost:5178",
         "http://127.0.0.1:5178",
 
-        "https://quizz.vercel.app"
+        # Vercel frontend
+        "https://quizz-brown-seven.vercel.app",
     ],
-
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
+# Register routers
 app.include_router(auth.router)
 app.include_router(questions.router)
 app.include_router(quiz.router)
