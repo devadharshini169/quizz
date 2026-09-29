@@ -17,7 +17,10 @@ function Quiz() {
   const attemptStarted = useRef(false);
   const submitted = useRef(false);
 
-  // Start quiz and load questions
+  // =========================================
+  // START QUIZ AND LOAD QUESTIONS
+  // =========================================
+
   useEffect(() => {
     if (!username) {
       navigate("/user");
@@ -32,9 +35,8 @@ function Quiz() {
 
     const startQuiz = async () => {
       try {
-        // Start quiz attempt
         const startResponse = await fetch(
-          "http://127.0.0.1:8000/quiz/start",
+          "https://quizz-mkkz.onrender.com/quiz/start",
           {
             method: "POST",
             headers: {
@@ -56,15 +58,14 @@ function Quiz() {
           return;
         }
 
-        // Save attempt ID
         localStorage.setItem(
           "attemptId",
           startData.attempt_id
         );
 
-        // Load questions
+        // Load questions from Render backend
         const questionResponse = await fetch(
-          "http://127.0.0.1:8000/questions/"
+          "https://quizz-mkkz.onrender.com/questions/"
         );
 
         const questionData = await questionResponse.json();
@@ -98,7 +99,11 @@ function Quiz() {
     startQuiz();
   }, [navigate, username]);
 
-  // Timer
+
+  // =========================================
+  // TIMER
+  // =========================================
+
   useEffect(() => {
     if (loading || questions.length === 0) {
       return;
@@ -110,13 +115,24 @@ function Quiz() {
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((previous) => previous - 1);
+      setTimeLeft(
+        (previous) => previous - 1
+      );
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, loading, questions.length]);
 
-  // Select answer
+  }, [
+    timeLeft,
+    loading,
+    questions.length
+  ]);
+
+
+  // =========================================
+  // SELECT ANSWER
+  // =========================================
+
   const handleAnswer = (answer) => {
     if (submitting) {
       return;
@@ -128,16 +144,27 @@ function Quiz() {
     }));
   };
 
-  // Next question
+
+  // =========================================
+  // NEXT QUESTION
+  // =========================================
+
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
+    if (
+      currentQuestion <
+      questions.length - 1
+    ) {
       setCurrentQuestion(
         currentQuestion + 1
       );
     }
   };
 
-  // Previous question
+
+  // =========================================
+  // PREVIOUS QUESTION
+  // =========================================
+
   const handlePrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(
@@ -146,9 +173,16 @@ function Quiz() {
     }
   };
 
-  // Submit quiz
+
+  // =========================================
+  // SUBMIT QUIZ
+  // =========================================
+
   const handleSubmit = async () => {
-    if (submitted.current || submitting) {
+    if (
+      submitted.current ||
+      submitting
+    ) {
       return;
     }
 
@@ -162,19 +196,23 @@ function Quiz() {
       setMessage(
         "Quiz attempt not found."
       );
+
       submitted.current = false;
       setSubmitting(false);
+
       return;
     }
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/quiz/submit",
+        "https://quizz-mkkz.onrender.com/quiz/submit",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             attempt_id: Number(attemptId),
             answers: answers,
@@ -197,10 +235,11 @@ function Quiz() {
 
         submitted.current = false;
         setSubmitting(false);
+
         return;
       }
 
-      // Save backend result
+      // Save result
       localStorage.setItem(
         "quizResult",
         JSON.stringify(data)
@@ -223,7 +262,6 @@ function Quiz() {
         data
       );
 
-      // Go to result page
       navigate("/result");
 
     } catch (error) {
@@ -241,7 +279,11 @@ function Quiz() {
     }
   };
 
-  // Format timer
+
+  // =========================================
+  // FORMAT TIMER
+  // =========================================
+
   const formatTime = () => {
     const minutes = Math.floor(
       timeLeft / 60
@@ -254,37 +296,60 @@ function Quiz() {
       .padStart(2, "0")}`;
   };
 
-  // Loading screen
+
+  // =========================================
+  // LOADING SCREEN
+  // =========================================
+
   if (loading) {
     return (
       <div className="app-container">
+
         <div className="quiz-card">
 
-          <h1>Loading Quiz...</h1>
+          <h1>
+            Loading Quiz...
+          </h1>
 
           {message && (
-            <p style={{ color: "#fbbf24" }}>
+            <p
+              style={{
+                color: "#fbbf24",
+              }}
+            >
               {message}
             </p>
           )}
 
         </div>
+
       </div>
     );
   }
 
-  // Error screen
+
+  // =========================================
+  // ERROR SCREEN
+  // =========================================
+
   if (
     message &&
     questions.length === 0
   ) {
     return (
       <div className="app-container">
+
         <div className="quiz-card">
 
-          <h1>Unable to Start Quiz</h1>
+          <h1>
+            Unable to Start Quiz
+          </h1>
 
-          <p style={{ color: "#fbbf24" }}>
+          <p
+            style={{
+              color: "#fbbf24",
+            }}
+          >
             {message}
           </p>
 
@@ -297,17 +362,25 @@ function Quiz() {
           </button>
 
         </div>
+
       </div>
     );
   }
 
-  // No questions
+
+  // =========================================
+  // NO QUESTIONS
+  // =========================================
+
   if (questions.length === 0) {
     return (
       <div className="app-container">
+
         <div className="quiz-card">
 
-          <h1>No Questions Available</h1>
+          <h1>
+            No Questions Available
+          </h1>
 
           <p>
             Please ask the administrator
@@ -315,9 +388,11 @@ function Quiz() {
           </p>
 
         </div>
+
       </div>
     );
   }
+
 
   const question =
     questions[currentQuestion];
@@ -325,40 +400,63 @@ function Quiz() {
   const selectedAnswer =
     answers[question.id];
 
+
+  // =========================================
+  // QUIZ PAGE
+  // =========================================
+
   return (
     <div className="app-container">
 
       <div
         className="quiz-card"
-        style={{ maxWidth: "800px" }}
+        style={{
+          maxWidth: "800px",
+        }}
       >
 
-        {/* Timer */}
+        {/* TIMER */}
+
         <div className="timer">
           Time Left: {formatTime()}
         </div>
 
-        <h1>Online Quiz</h1>
 
-        {/* Username */}
+        {/* TITLE */}
+
+        <h1>
+          Online Quiz
+        </h1>
+
+
+        {/* USERNAME */}
+
         <p>
-          <strong>Candidate:</strong>{" "}
+          <strong>
+            Candidate:
+          </strong>{" "}
           {username}
         </p>
 
-        {/* Question number */}
+
+        {/* QUESTION NUMBER */}
+
         <p>
           Question{" "}
           {currentQuestion + 1} of{" "}
           {questions.length}
         </p>
 
-        {/* Question */}
+
+        {/* QUESTION */}
+
         <h2>
           {question.question}
         </h2>
 
-        {/* Options */}
+
+        {/* OPTIONS */}
+
         <div
           style={{
             marginTop: "25px",
@@ -372,8 +470,8 @@ function Quiz() {
               background:
                 selectedAnswer ===
                 question.option1
-                  ? "rgba(99,102,241,0.5)"
-                  : "rgba(255,255,255,0.1)",
+                  ? "rgba(20,184,166,0.45)"
+                  : "rgba(255,255,255,0.08)",
             }}
             onClick={() =>
               handleAnswer(
@@ -384,6 +482,7 @@ function Quiz() {
             {question.option1}
           </button>
 
+
           <button
             className="option"
             disabled={submitting}
@@ -391,8 +490,8 @@ function Quiz() {
               background:
                 selectedAnswer ===
                 question.option2
-                  ? "rgba(99,102,241,0.5)"
-                  : "rgba(255,255,255,0.1)",
+                  ? "rgba(20,184,166,0.45)"
+                  : "rgba(255,255,255,0.08)",
             }}
             onClick={() =>
               handleAnswer(
@@ -403,6 +502,7 @@ function Quiz() {
             {question.option2}
           </button>
 
+
           <button
             className="option"
             disabled={submitting}
@@ -410,8 +510,8 @@ function Quiz() {
               background:
                 selectedAnswer ===
                 question.option3
-                  ? "rgba(99,102,241,0.5)"
-                  : "rgba(255,255,255,0.1)",
+                  ? "rgba(20,184,166,0.45)"
+                  : "rgba(255,255,255,0.08)",
             }}
             onClick={() =>
               handleAnswer(
@@ -422,6 +522,7 @@ function Quiz() {
             {question.option3}
           </button>
 
+
           <button
             className="option"
             disabled={submitting}
@@ -429,8 +530,8 @@ function Quiz() {
               background:
                 selectedAnswer ===
                 question.option4
-                  ? "rgba(99,102,241,0.5)"
-                  : "rgba(255,255,255,0.1)",
+                  ? "rgba(20,184,166,0.45)"
+                  : "rgba(255,255,255,0.08)",
             }}
             onClick={() =>
               handleAnswer(
@@ -443,7 +544,9 @@ function Quiz() {
 
         </div>
 
-        {/* Navigation buttons */}
+
+        {/* NAVIGATION */}
+
         <div
           style={{
             marginTop: "30px",
@@ -463,6 +566,7 @@ function Quiz() {
           >
             Previous
           </button>
+
 
           {currentQuestion ===
           questions.length - 1 ? (
@@ -489,7 +593,9 @@ function Quiz() {
 
         </div>
 
-        {/* Error/message */}
+
+        {/* ERROR MESSAGE */}
+
         {message && (
           <p
             style={{
