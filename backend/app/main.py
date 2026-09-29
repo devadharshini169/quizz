@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import Base, engine
+from app.database import Base, engine, SessionLocal
 
 from app.models import (
     admin,
@@ -19,25 +19,35 @@ from app.routers import (
 )
 
 
-# =========================================
-# CREATE DATABASE TABLES
-# =========================================
-
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
 
-# =========================================
-# CREATE FASTAPI APPLICATION
-# =========================================
+# Create default admin account
+db = SessionLocal()
+
+existing_admin = (
+    db.query(admin.Admin)
+    .filter(admin.Admin.username == "admin")
+    .first()
+)
+
+if not existing_admin:
+    new_admin = admin.Admin(
+        username="admin",
+        password="admin123"
+    )
+
+    db.add(new_admin)
+    db.commit()
+
+db.close()
+
 
 app = FastAPI(
     title="Online Quiz System"
 )
 
-
-# =========================================
-# CORS CONFIGURATION
-# =========================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,32 +70,21 @@ app.add_middleware(
 
         "http://localhost:5178",
         "http://127.0.0.1:5178",
+
+        "https://quizz.vercel.app"
     ],
 
     allow_credentials=True,
-
     allow_methods=["*"],
-
     allow_headers=["*"],
 )
 
 
-# =========================================
-# REGISTER ROUTERS
-# =========================================
-
 app.include_router(auth.router)
-
 app.include_router(questions.router)
-
 app.include_router(quiz.router)
-
 app.include_router(results.router)
 
-
-# =========================================
-# HOME API
-# =========================================
 
 @app.get("/")
 def home():
